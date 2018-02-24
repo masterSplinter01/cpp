@@ -1,0 +1,12 @@
+CC=g++
+CFLAGS = -Wall -Werror
+
+all: 
+	$(CC) $(CFLAGS) ./src/main.cpp -o heapstack
+
+clean:
+	rm -rf *.o
+
+valgrind:
+	 valgrind --leak-check=yes --show-reachable=yes ./heapstack
+

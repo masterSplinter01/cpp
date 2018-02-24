@@ -1,0 +1,182 @@
+
+#include "hashtable.h"
+#include <cstdlib>
+#include <iostream>
+
+namespace cpp_assignment{
+
+    struct Hash_node{
+        int key;
+        int value;
+        Hash_node* next;
+
+        Hash_node(int key, int value){
+            this->key = key;
+            this->value = value;
+            this->next = nullptr;
+        }
+    };
+
+    struct hash_table{
+        Hash_node** htable;
+
+        size_t table_size;
+
+        hash_table(){
+            table_size = DEFAULT_SIZE;
+            htable = new Hash_node*[table_size]();
+            for (size_t i = 0; i < table_size; ++i){
+                htable[i] = nullptr;
+            }
+        }
+
+        ~hash_table(){
+            for (size_t i = 0; i < table_size; ++i){
+                Hash_node* current_node = htable[i];
+                while (current_node != nullptr){
+                    Hash_node* prev_node = current_node;
+                    current_node = current_node->next;
+                    delete prev_node;
+                }
+            }
+            delete[] htable;
+        }
+    };
+
+    int calculate_hash(int key, size_t table_size){
+        auto size = static_cast<int> (table_size);
+        return (key % size + size) % size;
+    }
+
+    hash_table* create(){
+        auto temp_table = new hash_table();
+        return  temp_table;
+    }
+
+    void destroy(hash_table* table){
+        delete table;
+    }
+
+    bool insert(hash_table* table, int key, int value){
+        bool success = false;
+        int hash_value = calculate_hash(key, table->table_size);
+        if (!contains(table, key)){
+            table->htable[hash_value] = new Hash_node(key,value);
+            success = true;
+        }
+        else{
+            Hash_node* current_node = table->htable[hash_value];
+            while (current_node->next != nullptr && current_node->key != key) {
+                current_node = current_node->next;
+            }
+            if (current_node->key == key) {
+                current_node->value = value;
+                success = false;
+            }
+            else{
+                current_node->next = new Hash_node(key, value);
+                success = true;
+            }
+
+        }
+        if (size(table) >= table->table_size*0.5){
+            rehash(table);
+        }
+        return success;
+    }
+
+    bool erase(hash_table* table, int key){
+        bool success = false;
+        int hash_value = calculate_hash(key, table->table_size);
+        if (table->htable[hash_value] != nullptr){
+            Hash_node* current_node = table->htable[hash_value];
+            Hash_node* prev_node = nullptr;
+            while (current_node->next != nullptr && current_node->key != key){
+                prev_node = current_node;
+                current_node = current_node->next;
+            }
+            if (current_node->key == key){
+                if (prev_node == nullptr){
+                    Hash_node* next = current_node->next;
+                    delete current_node;
+                    table->htable[hash_value] = next;
+                    success = true;
+                }
+                else{
+                    Hash_node* next = current_node->next;
+                    delete current_node;
+                    prev_node->next = next;
+                    success = true;
+                }
+            }
+        }
+        return success;
+    }
+    int* get(hash_table* table, int key){
+
+        int *res = nullptr;
+        int hash_value = calculate_hash(key, table->table_size);
+
+        for (Hash_node *temp_node = table->htable[hash_value]; temp_node != nullptr; temp_node = temp_node->next) {
+            if (temp_node->key == key) {
+                res =  &temp_node->value;
+
+            }
+        }
+
+        return res;
+
+    }
+
+    bool contains(const hash_table* table, int key){
+        int hash_value = calculate_hash(key, table->table_size);
+
+        for (Hash_node *temp_node = table->htable[hash_value]; temp_node != nullptr; temp_node = temp_node->next) {
+            if (temp_node->key == key) {
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    size_t size (const hash_table* table){
+        size_t count = 0;
+        for (size_t i  = 0; i < table->table_size; ++i) {
+            Hash_node *temp_node = table->htable[i];
+            while (temp_node) {
+                temp_node = temp_node->next;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    void clear (hash_table* table){
+        for (size_t i  = 0; i < table->table_size; ++i){
+            while (table->htable[i] != nullptr){
+                Hash_node* temp_node = table->htable[i];
+                table->htable[i] = temp_node->next;
+                delete temp_node;
+            }
+        }
+    }
+
+    void rehash(hash_table* table){
+        size_t new_size = table->table_size*2;
+        auto new_table = new Hash_node*[new_size]();
+        for (size_t i = 0; i < table->table_size; ++i){
+            while (table->htable[i] != nullptr){
+                Hash_node* temp_node = table->htable[i];
+                table->htable[i] = temp_node->next;
+                int temp_hash = calculate_hash(temp_node->key, new_size);
+                new_table[temp_hash] = new Hash_node(temp_node->key, temp_node->value);
+                delete temp_node;
+            }
+        }
+
+        table->table_size = new_size;
+        table->htable = new_table;
+    }
+
+}

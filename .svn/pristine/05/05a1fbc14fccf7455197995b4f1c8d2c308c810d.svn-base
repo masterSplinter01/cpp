@@ -1,0 +1,38 @@
+#include <iostream>
+void func2(int n);
+void func1();
+
+using namespace std;
+
+int main()
+{
+	
+	cout<<"stack: \n";
+
+	func1();
+
+	const int n= 7;
+	int* arr_dynamic = new int[n];
+
+	cout<<"\nheap: \n";
+	for (size_t i = 0; i < n; ++i)
+	{
+		cout<<arr_dynamic+i<<'\n';
+	}
+	cout<<endl;
+	delete [] arr_dynamic;
+	return 0;
+}
+
+void func2(int n)
+{
+	int b = n*n;
+	cout<<"b: "<<&b<<'\n';
+}
+
+void func1()
+{
+	int a = 3;
+	cout<<"a: "<<&a<<'\n';
+	func2(a);
+}

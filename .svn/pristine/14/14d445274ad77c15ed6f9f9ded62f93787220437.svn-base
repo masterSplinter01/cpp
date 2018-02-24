@@ -1,0 +1,19 @@
+CC=g++
+CFLAGS = -Wall -Werror
+
+all: hashtable
+
+hashtable: main.o hashtable.o
+	$(CC) $(CFLAGS) ./bin/main.o ./bin/hashtable.o -o ./bin/hashtable
+main.o: ./src/main.cpp
+	$(CC) $(CFLAGS) -c ./src/main.cpp -o ./bin/main.o
+
+hashtable.o: ./src/hashtable.cpp ./src/hashtable.h
+	$(CC) $(CFLAGS) -c ./src/hashtable.cpp -o ./bin/hashtable.o
+
+clean:
+	rm -rf *.o bot
+
+valgrind:
+	 valgrind --leak-check=yes --show-reachable=yes ./hashtable
+

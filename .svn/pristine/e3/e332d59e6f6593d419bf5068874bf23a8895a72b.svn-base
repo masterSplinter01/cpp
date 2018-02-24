@@ -1,0 +1,19 @@
+#include <fstream>
+
+using namespace std;
+
+void hello();
+
+int main()
+{
+	hello();
+	return 0;
+}
+
+void hello()
+{
+	ofstream  helloh("hello.h");
+	helloh<<"Hello";
+	ofstream hellocpp("hello.cpp");
+	hellocpp<<"Hello";
+}

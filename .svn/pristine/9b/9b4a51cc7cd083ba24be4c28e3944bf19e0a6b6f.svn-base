@@ -1,0 +1,29 @@
+#include <iostream>
+#include "arr_mem.h"
+
+
+using namespace std;
+
+int main()
+{
+    int **matrix;
+    int m;
+    int n;
+
+    cout<<"enter the n "; cin>>n;
+    cout<<"enter the m "; cin>>m;
+
+    matrix=m_malloc(n,m);
+
+    for (int i=0; i<n; i++){
+        for (int j=0; j<m; j++)
+            cout<<matrix[i][j]<<' ';
+
+    cout<<"\n";
+    }
+
+
+    m_free(matrix, n, m);
+
+    return 0;
+}

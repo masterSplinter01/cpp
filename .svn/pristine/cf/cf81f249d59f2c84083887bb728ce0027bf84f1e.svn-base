@@ -1,0 +1,33 @@
+#include <iostream>
+using namespace std;
+int** m_malloc(int n, int m)
+{
+    int *lines;
+    int **arrPnts;
+
+    int lineSize = n * m;
+    int sas = 0; //индексы элементов lines - начал строк в матрице
+
+    lines = new int [lineSize]; //создаем большой одномерный массив
+
+    for (int i = 0; i < lineSize; i++)
+        lines[i] = i;
+
+    arrPnts = new int* [n]; //массив указателей на  элементы-начала строк матрицы
+
+    for (int i = 0; i < n; i++){
+        arrPnts[i] = &lines[sas];
+        sas += m; //то есть пусть, к примеру, m=5, то берем элементы c индеками 0,5,10..., которые и есть начала строк
+
+    }
+    return arrPnts;
+}
+
+void m_free(int** arrPnts, int n, int m)
+{
+
+    delete[] arrPnts[0];
+    delete[] arrPnts;
+
+}
+
